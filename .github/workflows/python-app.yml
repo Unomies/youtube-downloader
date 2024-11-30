@@ -3,30 +3,30 @@ name: Python CI
 on:
   push:
     branches:
-      - main 
+      - main  
   pull_request:
     branches:
-      - main 
+      - main  
 
 jobs:
   build:
-    runs-on: ubuntu-latest  
+    runs-on: ubuntu-latest 
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2  
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2 
         with:
           python-version: '3.9'  
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt  # Pastikan Anda memiliki file requirements.txt yang berisi dependencies
+          python -m pip install --upgrade pip  # Upgrade pip
+          pip install -r requirements.txt  # Instal dependensi yang ada di requirements.txt
 
       - name: Run tests
         run: |
           # Jalankan skrip Python Anda untuk memastikan tidak ada error
-          python ytDownloader.py  # Uji coba jalankan kode Anda
+          python ytDownloader.py  # Ganti dengan file Python yang sesuai

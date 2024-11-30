@@ -2,12 +2,13 @@ import os
 import platform
 import time
 import yt_dlp
+import json
 
 def clear_screen():
     if platform.system() == "Windows":
-        os.system("cls")  
+        os.system("cls")
     else:
-        os.system("clear")  
+        os.system("clear")
 
 def home():
     clear_screen()
@@ -20,7 +21,7 @@ def home():
         choice = input("> ").strip().lower()
 
     if choice == "1":
-        download_video()
+        download_video_from_file("urls.json")  
     elif choice == "2":
         view_history()
     elif choice == "3":
@@ -35,43 +36,43 @@ def home():
         time.sleep(2)
         home()
 
-def download_video():
+def download_video_from_file(filename):
     clear_screen()
-    url = input("Enter the YouTube Video URL: ").strip()
-    ydl_opts = {
-        'format': 'best',  
-        'outtmpl': '%(title)s.%(ext)s',  
-    }
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(url, download=False)
-            title = info_dict.get("title", "Unknown Title")
-            views = info_dict.get("view_count", 0)
-            filename = ydl.prepare_filename(info_dict)
-            
-            print("\n\033[32mVideo Details:\033[0m")
-            print(f"Title      : {title}")
-            print(f"Views      : {views:,}")
-            print(f"File Name  : {filename}")
-            print("\033[32mDownloading...\033[0m")
-            
-            ydl.download([url])
+        with open(filename, "r") as file:
+            data = json.load(file) 
+            urls = data.get("videos", [])
+            if not urls:
+                print("\033[31mNo URLs found in the JSON file.\033[0m\n")
+                return
+            for url in urls:
+                ydl_opts = {
+                    'format': 'best', 
+                    'outtmpl': '%(title)s.%(ext)s',  
+                }
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(url, download=False)
+                    title = info_dict.get("title", "Unknown Title")
+                    views = info_dict.get("view_count", 0)
+                    filename = ydl.prepare_filename(info_dict)
 
-            print("\033[32mDownload complete!\033[0m")
-            
-            with open("history.yt", "a+", encoding="utf-8") as f:
-                f.write(f"Video URL  : {url}\n")
-                f.write(f"Title      : {title}\n")
-                f.write(f"Views      : {views:,}\n")
-                f.write(f"File Name  : {filename}\n")
-                f.write("-" * 30 + "\n")
-
-            time.sleep(2)
-            home()
+                    print(f"\033[32mDownloading video: {title} with {views:,} views\033[0m")
+                    ydl.download([url])  
+                    print(f"\033[32mDownload complete for {title}\033[0m")
+                    
+                    with open("history.yt", "a+", encoding="utf-8") as f:
+                        f.write(f"Video URL  : {url}\n")
+                        f.write(f"Title      : {title}\n")
+                        f.write(f"Views      : {views:,}\n")
+                        f.write(f"File Name  : {filename}\n")
+                        f.write("-" * 30 + "\n")
+                    
+                    time.sleep(1)
     except Exception as e:
         print(f"\033[31mAn error occurred: {e}\033[0m")
         time.sleep(2)
-        home()
+
+    home()
 
 def view_history():
     clear_screen()
