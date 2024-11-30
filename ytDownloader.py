@@ -4,7 +4,7 @@ import time
 import yt_dlp
 import json
 
-def clear_screen():
+dhhdhdhabdnabbdef clear_screen():
     if platform.system() == "Windows":
         os.system("cls")
     else:
