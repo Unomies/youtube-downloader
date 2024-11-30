@@ -4,14 +4,21 @@ import time
 import yt_dlp
 
 def clear_screen():
-    os.system("cls")  
+    if platform.system() == "Windows":
+        os.system("cls")  
+    else:
+        os.system("clear")  
 
 def home():
     clear_screen()
     print("\033[31mYouTube Video Downloader\033[0m")
     print("1. Download Video \n2. See Download History \n3. Delete Downloaded Video \n4. Exit")
-    choice = input("> ").strip().lower()
     
+    if os.getenv('GITHUB_ACTIONS'):
+        choice = "1"  
+    else:
+        choice = input("> ").strip().lower()
+
     if choice == "1":
         download_video()
     elif choice == "2":
